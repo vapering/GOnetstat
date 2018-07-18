@@ -13,7 +13,6 @@ import (
     "io/ioutil"
     "strings"
     "os"
-    "os/user"
     "strconv"
     "path/filepath"
     "regexp"
@@ -44,7 +43,6 @@ var STATE = map[string]string {
 
 
 type Process struct {
-    User         string
     Name         string
     Pid          string
     Exe          string
@@ -180,12 +178,6 @@ func getProcessName(exe string) string {
 }
 
 
-func getUser(uid string) string {
-    u, _ := user.LookupId(uid)
-    return u.Username
-}
-
-
 func removeEmpty(array []string) []string {
     // remove empty data from line
     var new_array [] string
@@ -220,12 +212,11 @@ func netstat(t string) []Process {
         fport := hexToDec(fip_port[1])
 
         state := STATE[line_array[3]]
-        uid := getUser(line_array[7])
         pid := findPid(line_array[9])
         exe := getProcessExe(pid)
         name := getProcessName(exe)
 
-        p := Process{uid, name, pid, exe, state, ip, port, fip, fport}
+        p := Process{name, pid, exe, state, ip, port, fip, fport}
 
         Processes = append(Processes, p)
 
